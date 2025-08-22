@@ -18,3 +18,6 @@ Problem Definition : With the rise of AI writing tools (e.g., ChatGPT),    plagi
 4. Reviewer Dashboard 📊
 --Easy-to-read interface for conference organizers.
 --Provides originality score, AI-likelihood score, and plagiarism report.
+5. Explainable Reports 📝
+--Instead of just “flagging,” the system explains why a section is suspicious.
+--Helps authors improve and resubmit.
