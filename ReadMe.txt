@@ -11,3 +11,7 @@ Problem Definition : With the rise of AI writing tools (e.g., ChatGPT),    plagi
 2. AI-Generated Content Detection 🤖
 --Uses entropy & perplexity to catch text that feels “too AI-like.”
 --Detects hidden AI-watermarks in generated writing.
+3. Advanced Plagiarism Checker 🌐
+--Works across multiple languages.
+--Catches rephrased, paraphrased, and translated content.
+--Detects plagiarism from research papers, blogs, and online articles.
