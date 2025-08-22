@@ -1,0 +1,30 @@
+{
+  "name": "creative-web-project",
+  "version": "1.0.0",
+  "description": "A creative and colorful web project with a dark mode switch.",
+  "main": "src/App.js",
+  "scripts": {
+    "start": "webpack serve --mode development",
+    "build": "webpack --mode production",
+    "test": "jest"
+  },
+  "keywords": [
+    "web",
+    "dark mode",
+    "colorful",
+    "creative"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
+  },
+  "devDependencies": {
+    "webpack": "^5.64.4",
+    "webpack-cli": "^4.9.1",
+    "webpack-dev-server": "^4.6.0",
+    "babel-loader": "^8.2.3",
+    "jest": "^27.0.6"
+  }
+}

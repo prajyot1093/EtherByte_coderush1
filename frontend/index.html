@@ -1,33 +1,857 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CMT - Research Paper Submission</title>
-  <link rel="stylesheet" href="style.css">
-  </head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CMT – AI-Powered Research Paper Detection</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #06b6d4;
+            --primary-light: #67e8f9;
+            --accent: #ec4899;
+            --accent-light: #f9a8d4;
+            --bg-dark: #18181b;
+            --bg-glass: rgba(255,255,255,0.15);
+            --glass-border: rgba(255,255,255,0.25);
+            --text-dark: #1f2937;
+            --text-light: #f9fafb;
+            --gray: #6b7280;
+            --white: #fff;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { height: 100%; }
+        body {
+            font-family: 'Source Sans Pro', sans-serif;
+            background: linear-gradient(120deg, var(--primary-light) 0%, var(--accent-light) 100%);
+            color: var(--text-dark);
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: background 0.5s;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+        header {
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 2px 24px rgba(6,182,212,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        nav { display: flex; align-items: center; justify-content: space-between; padding: 1.2rem 0; }
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.1rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+        .nav-links a {
+            color: var(--text-dark);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.08rem;
+            transition: color 0.3s;
+        }
+        .nav-links a:hover { color: var(--accent); }
+        .dark-mode-switch {
+            margin-left: 1.5rem;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            padding: 0.4rem 1.1rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 2px 10px rgba(6,182,212,0.08);
+            transition: background 0.3s;
+        }
+        .dark-mode-switch.active {
+            background: linear-gradient(90deg, var(--accent), var(--primary));
+        }
+        /* Floating AI shapes */
+        .bg-shapes {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.13;
+            filter: blur(2px);
+            animation: float 8s ease-in-out infinite;
+        }
+        .shape-1 {
+            width: 220px; height: 220px;
+            background: var(--primary);
+            top: 8%; left: 75%;
+            animation-delay: 0s;
+        }
+        .shape-2 {
+            width: 160px; height: 160px;
+            background: var(--accent);
+            top: 60%; left: 10%;
+            animation-delay: 2s;
+        }
+        .shape-3 {
+            width: 110px; height: 110px;
+            background: var(--primary-light);
+            top: 30%; left: 20%;
+            animation-delay: 4s;
+        }
+        @keyframes float {
+            0%,100% { transform: translateY(0) rotate(0deg);}
+            50% { transform: translateY(-30px) rotate(180deg);}
+        }
+        /* Hero Section */
+        .hero {
+            padding: 5.5rem 0 3.5rem 0;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.2rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientMove 3s linear infinite alternate;
+        }
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+        .hero-subtitle {
+            font-size: 1.3rem;
+            color: var(--gray);
+            margin: 1.2rem auto 2.2rem auto;
+            max-width: 600px;
+        }
+        .cta-button {
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            color: #fff;
+            padding: 1rem 2.2rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.15rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 8px 32px rgba(6,182,212,0.13);
+            margin-top: 0.5rem;
+        }
+        .cta-button:hover {
+            transform: translateY(-2px) scale(1.04);
+            box-shadow: 0 16px 40px rgba(236,72,153,0.18);
+        }
+        /* Core Modules Section */
+        .modules-section {
+            padding: 4rem 0 2rem 0;
+            background: none;
+        }
+        .modules-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            text-align: center;
+            margin-bottom: 2.5rem;
+            color: var(--text-dark);
+        }
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2.2rem;
+            justify-items: center;
+        }
+        .module-card {
+            background: var(--bg-glass);
+            border: 1.5px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(6,182,212,0.10);
+            padding: 2.2rem 2rem 1.7rem 2rem;
+            min-height: 340px;
+            width: 100%;
+            max-width: 370px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+            overflow: hidden;
+        }
+        .module-card:hover {
+            background: linear-gradient(120deg, var(--primary-light) 0%, var(--accent-light) 100%);
+            transform: translateY(-8px) scale(1.03) rotate(-1deg);
+            box-shadow: 0 16px 48px rgba(236,72,153,0.13);
+        }
+        .module-icon {
+            font-size: 2.6rem;
+            margin-bottom: 1.1rem;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: iconBounce 1.5s infinite alternate;
+        }
+        @keyframes iconBounce {
+            0% { transform: translateY(0);}
+            100% { transform: translateY(-10px);}
+        }
+        .module-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 0.7rem;
+            color: var(--text-dark);
+            text-align: center;
+        }
+        .module-desc {
+            color: var(--gray);
+            font-size: 1.05rem;
+            text-align: center;
+            margin-bottom: 1.2rem;
+        }
+        .progress-bar-bg {
+            width: 100%;
+            height: 10px;
+            background: #e0f2fe;
+            border-radius: 8px;
+            margin-bottom: 0.7rem;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: 8px;
+            width: 0;
+            transition: width 1.5s cubic-bezier(.23,1.01,.32,1);
+        }
+        .progress-label {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.7rem;
+        }
+        .run-test-btn {
+            margin-top: auto;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            padding: 0.7rem 1.7rem;
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+            box-shadow: 0 4px 16px rgba(6,182,212,0.10);
+        }
+        .run-test-btn:hover {
+            background: linear-gradient(90deg, var(--accent), var(--primary));
+            transform: scale(1.05);
+        }
+        /* Stats Section */
+        .stats-section {
+            padding: 3.5rem 0 2.5rem 0;
+            background: #fff;
+            border-radius: 24px;
+            margin: 2.5rem auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            max-width: 1100px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 2.2rem;
+            text-align: center;
+        }
+        .stat-item {
+            padding: 1.2rem 0.5rem;
+        }
+        .stat-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: block;
+            animation: countUp 2s ease-out;
+        }
+        .stat-label {
+            color: var(--gray);
+            font-weight: 500;
+            margin-top: 0.5rem;
+            font-size: 1.08rem;
+        }
+        @keyframes countUp {
+            from { opacity: 0; transform: translateY(20px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+        /* Dashboard Preview */
+        .dashboard-preview {
+            padding: 4rem 0 3rem 0;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            margin: 2.5rem 0;
+            border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(6,182,212,0.10);
+        }
+        .dashboard-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 2.5rem;
+            color: #fff;
+        }
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        .dashboard-card {
+            background: rgba(255,255,255,0.10);
+            backdrop-filter: blur(10px);
+            padding: 1.7rem 1.2rem;
+            border-radius: 18px;
+            border: 1px solid rgba(255,255,255,0.18);
+            box-shadow: 0 4px 24px rgba(6,182,212,0.10);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .dashboard-card.pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 4px 24px rgba(6,182,212,0.10);}
+            50% { box-shadow: 0 8px 40px rgba(236,72,153,0.18);}
+            100% { box-shadow: 0 4px 24px rgba(6,182,212,0.10);}
+        }
+        .dashboard-metric {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-light);
+            margin-bottom: 0.5rem;
+        }
+        .dashboard-label {
+            color: rgba(255,255,255,0.85);
+            font-size: 1.05rem;
+        }
+        .trend-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.93rem;
+            margin-top: 0.7rem;
+        }
+        .trend-up { color: #10b981; }
+        .trend-down { color: #ef4444; }
+        /* Submission Form Section */
+        .submission-section {
+            padding: 4rem 0 3rem 0;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        .submission-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            margin-bottom: 1.2rem;
+            color: var(--text-dark);
+        }
+        .submission-form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.2rem;
+            background: var(--bg-glass);
+            border: 1.5px solid var(--glass-border);
+            border-radius: 18px;
+            padding: 2.2rem 2.5rem;
+            max-width: 420px;
+            margin: 0 auto;
+            box-shadow: 0 4px 24px rgba(6,182,212,0.10);
+        }
+        .upload-label {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary);
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        .upload-label:hover { color: var(--accent); }
+        .upload-icon { font-size: 1.5rem; }
+        .submission-form input[type="file"] { display: none; }
+        .submission-form textarea {
+            width: 100%;
+            min-height: 90px;
+            border-radius: 10px;
+            border: 1px solid #e0f2fe;
+            padding: 0.8rem;
+            font-size: 1.05rem;
+            resize: vertical;
+            font-family: inherit;
+            background: #f9fafb;
+            transition: border 0.3s;
+        }
+        .submission-form textarea:focus { border: 1.5px solid var(--primary); outline: none; }
+        .submission-form .cta-button {
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+        .plagiarism-result {
+            margin-top: 1.2rem;
+            font-size: 1.13rem;
+            font-weight: 600;
+            min-height: 2.5rem;
+            color: var(--accent);
+            animation: fadeIn 1s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0;}
+            to { opacity: 1;}
+        }
+        /* --- NEW ANIMATIONS --- */
+        /* Neon Glow Animation */
+        @keyframes neonGlow {
+            0% { filter: blur(2px) brightness(1.2);}
+            50% { filter: blur(6px) brightness(2);}
+            100% { filter: blur(2px) brightness(1.2);}
+        }
+        .bg-shapes .shape {
+            animation: float 8s ease-in-out infinite, neonGlow 4s infinite alternate;
+        }
+
+        /* Hero Title Flicker */
+        @keyframes flicker {
+            0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
+            20%, 22%, 24%, 55% { opacity: 0.6; }
+        }
+        .hero-title {
+            animation: gradientMove 3s linear infinite alternate, flicker 2.5s infinite;
+        }
+
+        /* Button Pulse */
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 12px #06b6d4, 0 0 24px #ec4899; }
+            50% { box-shadow: 0 0 32px #ec4899, 0 0 48px #06b6d4; }
+            100% { box-shadow: 0 0 12px #06b6d4, 0 0 24px #ec4899; }
+        }
+        .cta-button, .run-test-btn {
+            animation: pulseGlow 2.2s infinite;
+        }
+
+        /* Module Card Pop-in */
+        .module-card {
+            opacity: 0;
+            transform: translateY(40px) scale(0.98);
+            animation: cardPopIn 1s cubic-bezier(.23,1.01,.32,1) forwards;
+        }
+        .module-card:nth-child(1) { animation-delay: 0.2s; }
+        .module-card:nth-child(2) { animation-delay: 0.5s; }
+        .module-card:nth-child(3) { animation-delay: 0.8s; }
+        @keyframes cardPopIn {
+            to { opacity: 1; transform: translateY(0) scale(1);}
+        }
+
+        /* Progress Bar Shine */
+        .progress-bar-fill {
+            position: relative;
+            overflow: hidden;
+        }
+        .progress-bar-fill::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -40%;
+            width: 40%; height: 100%;
+            background: linear-gradient(120deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.7) 50%, rgba(255,255,255,0.2) 100%);
+            animation: shine 2.2s infinite linear;
+        }
+        @keyframes shine {
+            0% { left: -40%; }
+            100% { left: 100%; }
+        }
+
+        /* Dashboard Card Pop-in */
+        .dashboard-card {
+            opacity: 0;
+            transform: scale(0.95) translateY(30px);
+            animation: dashPopIn 1.1s cubic-bezier(.23,1.01,.32,1) forwards;
+        }
+        .dashboard-card:nth-child(1) { animation-delay: 0.2s; }
+        .dashboard-card:nth-child(2) { animation-delay: 0.4s; }
+        .dashboard-card:nth-child(3) { animation-delay: 0.6s; }
+        .dashboard-card:nth-child(4) { animation-delay: 0.8s; }
+        .dashboard-card:nth-child(5) { animation-delay: 1.0s; }
+        .dashboard-card:nth-child(6) { animation-delay: 1.2s; }
+        @keyframes dashPopIn {
+            to { opacity: 1; transform: scale(1) translateY(0);}
+        }
+
+        /* Stat Number Bounce */
+        .stat-number {
+            animation: countUp 2s ease-out, statBounce 1.2s 1.5s;
+        }
+        @keyframes statBounce {
+            0% { transform: scale(1);}
+            30% { transform: scale(1.25);}
+            60% { transform: scale(0.92);}
+            100% { transform: scale(1);}
+        }
+
+        /* Submission Form Pop-in */
+        .submission-form {
+            opacity: 0;
+            transform: translateY(40px) scale(0.98);
+            animation: cardPopIn 1s 1.2s cubic-bezier(.23,1.01,.32,1) forwards;
+        }
+
+        /* Plagiarism Result Fade & Pop */
+        .plagiarism-result {
+            animation: fadeIn 1s, statBounce 1.2s;
+        }
+
+        /* Upload icon wiggle */
+        .upload-icon {
+            display: inline-block;
+            animation: wiggle 1.5s infinite;
+        }
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(-8deg);}
+            50% { transform: rotate(8deg);}
+        }
+        /* Responsive */
+        @media (max-width: 900px) {
+            .modules-grid, .dashboard-grid, .stats-grid { grid-template-columns: 1fr; }
+            .container { padding: 0 10px; }
+        }
+        @media (max-width: 600px) {
+            .hero-title { font-size: 2.1rem; }
+            .modules-title, .dashboard-title, .submission-title { font-size: 1.3rem; }
+            .submission-form { padding: 1.2rem 0.5rem; }
+        }
+        /* Dark Mode */
+        body.dark-mode {
+            background: linear-gradient(120deg, #18181b 0%, #334155 100%);
+            color: var(--text-light);
+        }
+        body.dark-mode header {
+            background: rgba(31,41,55,0.98);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.4);
+        }
+        body.dark-mode .logo { color: var(--accent); -webkit-text-fill-color: unset; }
+        body.dark-mode .nav-links a { color: var(--text-light);}
+        body.dark-mode .nav-links a:hover { color: var(--accent);}
+        body.dark-mode .modules-title, body.dark-mode .module-title, body.dark-mode .submission-title { color: var(--text-light);}
+        body.dark-mode .module-card { background: rgba(39,39,54,0.7); border-color: rgba(255,255,255,0.08);}
+        body.dark-mode .module-card:hover { background: linear-gradient(120deg, #334155 0%, #18181b 100%);}
+        body.dark-mode .progress-bar-bg { background: #334155;}
+        body.dark-mode .progress-label { color: var(--accent);}
+        body.dark-mode .stats-section { background: #26263a; color: var(--text-light);}
+        body.dark-mode .stat-label { color: #cbd5e1;}
+        body.dark-mode .dashboard-preview { background: #18181b; color: var(--text-light);}
+        body.dark-mode .dashboard-card { background: rgba(39,39,54,0.7); border-color: rgba(255,255,255,0.08);}
+        body.dark-mode .dashboard-metric { color: var(--accent-light);}
+        body.dark-mode .dashboard-label { color: #cbd5e1;}
+        body.dark-mode .submission-form { background: rgba(39,39,54,0.7); border-color: rgba(255,255,255,0.08);}
+        body.dark-mode .upload-label { color: var(--accent);}
+        body.dark-mode .upload-label:hover { color: var(--primary);}
+        body.dark-mode .submission-form textarea { background: #26263a; color: var(--text-light); border: 1px solid #334155;}
+        body.dark-mode .submission-form textarea:focus { border: 1.5px solid var(--accent);}
+        body.dark-mode .plagiarism-result { color: var(--primary);}
+        body.dark-mode .bg-shapes .shape { opacity: 0.18;}
+    </style>
+</head>
 <body>
-  <header>
-    <h1>Conference Management Toolkit (CMT)</h1>
-  </header>
- <main>
-    <section class="upload-section">
-      <h2>Submit Your Research Paper</h2>
-      <form id="uploadForm">
-        <input type="file" id="fileInput" accept=".pdf,.doc,.docx" required>
-        <button type="submit">Upload</button>
-      </form>
+    <div class="bg-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
+    <header>
+        <nav class="container">
+            <div class="logo">CMT</div>
+            <ul class="nav-links">
+                <li><a href="#modules">Modules</a></li>
+                <li><a href="#stats">Stats</a></li>
+                <li><a href="#dashboard">Dashboard</a></li>
+                <li><a href="#submit">Submit</a></li>
+            </ul>
+            <button class="dark-mode-switch" id="darkModeSwitch" aria-label="Toggle dark mode">
+                <span class="icon" id="darkModeIcon">🌙</span>
+                <span id="darkModeText">Dark Mode</span>
+            </button>
+        </nav>
+    </header>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1 class="hero-title">CMT – AI-Powered Research Paper Detection</h1>
+            <p class="hero-subtitle">
+                Detect AI-generated and plagiarized content in academic submissions with high accuracy.<br>
+                Modern toolkit for conference organizers, educators, and researchers.
+            </p>
+            <a href="#modules" class="cta-button">Explore Modules</a>
+        </div>
     </section>
-<section class="results-section" id="results">
-      <h2>Analysis Results</h2>
-      <div id="output">No file uploaded yet.</div>
+    <!-- Core Modules Section -->
+    <section class="modules-section" id="modules">
+        <div class="container">
+            <h2 class="modules-title">Core Detection Modules</h2>
+            <div class="modules-grid">
+                <div class="module-card" data-module="stylometric">
+                    <div class="module-icon">✍️</div>
+                    <div class="module-title">Stylometric Fingerprinting</div>
+                    <div class="module-desc">Per-student writing style analysis using linguistic markers and syntactic structures.</div>
+                    <div class="progress-bar-bg"><div class="progress-bar-fill" data-width="96"></div></div>
+                    <div class="progress-label">96.4% Pattern Recognition Accuracy</div>
+                    <button class="run-test-btn">Run Test</button>
+                </div>
+                <div class="module-card" data-module="ai-watermark">
+                    <div class="module-icon">🤖</div>
+                    <div class="module-title">AI-Watermark Detection</div>
+                    <div class="module-desc">Entropy and perplexity analysis to identify AI-generated content patterns and signatures.</div>
+                    <div class="progress-bar-bg"><div class="progress-bar-fill" data-width="92"></div></div>
+                    <div class="progress-label">92.8% AI Content Detection</div>
+                    <button class="run-test-btn">Run Test</button>
+                </div>
+                <div class="module-card" data-module="multilang">
+                    <div class="module-icon">🌐</div>
+                    <div class="module-title">Multi-Language Plagiarism</div>
+                    <div class="module-desc">Cross-linguistic plagiarism detection with advanced paraphrasing and translation analysis.</div>
+                    <div class="progress-bar-bg"><div class="progress-bar-fill" data-width="89"></div></div>
+                    <div class="progress-label">89.7% Cross-Language Detection</div>
+                    <button class="run-test-btn">Run Test</button>
+                </div>
+            </div>
+        </div>
     </section>
-  </main>
-
-  <footer>
-    <p>© 2025 Conference Management Toolkit</p>
-  </footer>
-
-  <script src="script.js"></script>
+    <!-- Stats Section -->
+    <section class="stats-section" id="stats">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-number" data-target="94.2">0</span>
+                    <div class="stat-label">AI Detection Accuracy</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" data-target="87.3">0</span>
+                    <div class="stat-label">Plagiarism Detection Rate</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" data-target="99.1">0</span>
+                    <div class="stat-label">Stylometric Precision</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" data-target="15">0</span>
+                    <div class="stat-label">Languages Supported</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Dashboard Preview Section -->
+    <section class="dashboard-preview" id="dashboard">
+        <div class="container">
+            <h2 class="dashboard-title">Live Analytics Dashboard</h2>
+            <div class="dashboard-grid">
+                <div class="dashboard-card pulse">
+                    <div class="dashboard-metric" id="submissions-processed">0</div>
+                    <div class="dashboard-label">Submissions Processed Today</div>
+                    <div class="trend-indicator trend-up">↗ +23.4% from yesterday</div>
+                </div>
+                <div class="dashboard-card">
+                    <div class="dashboard-metric" id="ai-flagged">0%</div>
+                    <div class="dashboard-label">AI-Generated Content Flagged</div>
+                    <div class="trend-indicator trend-up">↗ +8.2% detection improvement</div>
+                </div>
+                <div class="dashboard-card">
+                    <div class="dashboard-metric" id="plagiarism-detected">0%</div>
+                    <div class="dashboard-label">Plagiarism Cases Detected</div>
+                    <div class="trend-indicator trend-down">↘ -2.1% from last week</div>
+                </div>
+                <div class="dashboard-card pulse">
+                    <div class="dashboard-metric" id="confidence-score">0%</div>
+                    <div class="dashboard-label">Average Confidence Score</div>
+                    <div class="trend-indicator trend-up">↗ +5.7% accuracy boost</div>
+                </div>
+                <div class="dashboard-card">
+                    <div class="dashboard-metric" id="processing-time">0s</div>
+                    <div class="dashboard-label">Average Processing Time</div>
+                    <div class="trend-indicator trend-down">↘ -15% faster processing</div>
+                </div>
+                <div class="dashboard-card">
+                    <div class="dashboard-metric" id="false-positives">0%</div>
+                    <div class="dashboard-label">False Positive Rate</div>
+                    <div class="trend-indicator trend-down">↘ -12% improvement</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Submission Form Section -->
+    <section class="submission-section" id="submit">
+        <div class="container">
+            <h2 class="submission-title">Simulate Paper Submission</h2>
+            <form id="plagiarismForm" class="submission-form" enctype="multipart/form-data">
+                <label for="fileUpload" class="upload-label">
+                    <span class="upload-icon">📄</span>
+                    <span>Upload File</span>
+                </label>
+                <input type="file" id="fileUpload" name="fileUpload" accept=".txt,.doc,.docx,.pdf">
+                <span style="color:var(--gray);font-size:0.95rem;">or paste sample text below</span>
+                <textarea id="sampleText" placeholder="Paste your research paper text here..."></textarea>
+                <button type="submit" class="cta-button">Check Submission</button>
+            </form>
+            <div id="plagiarismResult" class="plagiarism-result"></div>
+        </div>
+    </section>
+    <script>
+        // Animated Counter Function
+        function animateCounter(element, target, suffix = '') {
+            let current = 0;
+            const increment = target / 100;
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                element.textContent = Math.floor(current * 10) / 10 + suffix;
+            }, 20);
+        }
+        // Initialize counters when page loads
+        window.addEventListener('load', () => {
+            // Stats counters
+            document.querySelectorAll('.stat-number').forEach(stat => {
+                const target = parseFloat(stat.dataset.target);
+                const suffix = target < 20 ? '' : '%';
+                animateCounter(stat, target, suffix);
+            });
+            // Dashboard metrics
+            setTimeout(() => {
+                animateCounter(document.getElementById('submissions-processed'), 1247);
+                animateCounter(document.getElementById('ai-flagged'), 18.3, '%');
+                animateCounter(document.getElementById('plagiarism-detected'), 12.7, '%');
+                animateCounter(document.getElementById('confidence-score'), 94.2, '%');
+                animateCounter(document.getElementById('processing-time'), 2.4, 's');
+                animateCounter(document.getElementById('false-positives'), 3.1, '%');
+            }, 1000);
+            // Animate progress bars
+            setTimeout(() => {
+                document.querySelectorAll('.progress-bar-fill').forEach(fill => {
+                    const width = fill.dataset.width;
+                    fill.style.width = width + '%';
+                });
+            }, 1200);
+        });
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+        // Real-time data simulation
+        setInterval(() => {
+            const submissionsEl = document.getElementById('submissions-processed');
+            if (submissionsEl) {
+                const current = parseInt(submissionsEl.textContent);
+                submissionsEl.textContent = current + Math.floor(Math.random() * 3);
+            }
+        }, 5000);
+        // DARK MODE SWITCH LOGIC
+        const darkModeSwitch = document.getElementById('darkModeSwitch');
+        const darkModeIcon = document.getElementById('darkModeIcon');
+        const darkModeText = document.getElementById('darkModeText');
+        function setDarkMode(on) {
+            if (on) {
+                document.body.classList.add('dark-mode');
+                darkModeSwitch.classList.add('active');
+                darkModeIcon.textContent = '☀️';
+                darkModeText.textContent = 'Light Mode';
+                localStorage.setItem('darkMode', 'on');
+            } else {
+                document.body.classList.remove('dark-mode');
+                darkModeSwitch.classList.remove('active');
+                darkModeIcon.textContent = '🌙';
+                darkModeText.textContent = 'Dark Mode';
+                localStorage.setItem('darkMode', 'off');
+            }
+        }
+        darkModeSwitch.addEventListener('click', () => {
+            setDarkMode(!document.body.classList.contains('dark-mode'));
+        });
+        window.addEventListener('DOMContentLoaded', () => {
+            const saved = localStorage.getItem('darkMode');
+            if (saved === 'on' || (saved === null && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                setDarkMode(true);
+            }
+        });
+        // Module "Run Test" Button Animation
+        document.querySelectorAll('.run-test-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const card = this.closest('.module-card');
+                const fill = card.querySelector('.progress-bar-fill');
+                fill.style.width = '0%';
+                setTimeout(() => {
+                    fill.style.width = fill.dataset.width + '%';
+                }, 200);
+                this.textContent = "Testing...";
+                this.disabled = true;
+                setTimeout(() => {
+                    this.textContent = "Run Test";
+                    this.disabled = false;
+                }, 1500);
+            });
+        });
+        // Submission Form Logic (Simulated)
+        document.getElementById('plagiarismForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const fileInput = document.getElementById('fileUpload');
+            const textInput = document.getElementById('sampleText');
+            const resultDiv = document.getElementById('plagiarismResult');
+            resultDiv.textContent = "Analyzing submission...";
+            resultDiv.style.color = "var(--primary)";
+            setTimeout(() => {
+                // Simulate detection logic
+                let msg = "";
+                let ai = Math.random() < 0.35;
+                let plag = Math.random() < 0.4;
+                let style = Math.random() < 0.2;
+                if (!fileInput.files.length && !textInput.value.trim()) {
+                    resultDiv.textContent = "Please upload a file or paste some text.";
+                    resultDiv.style.color = "var(--accent)";
+                    return;
+                }
+                msg += ai ? "🤖 <b>AI-generated patterns detected.</b><br>" : "✅ <b>No strong AI signals found.</b><br>";
+                msg += plag ? "❌ <b>Plagiarism Detected!</b><br>" : "✅ <b>No Plagiarism Found.</b><br>";
+                msg += style ? "✍️ <b>Stylometric inconsistency flagged.</b>" : "✍️ <b>Writing style matches profile.</b>";
+                resultDiv.innerHTML = msg;
+                resultDiv.style.animation = "fadeIn 1s";
+                resultDiv.style.color = plag ? "var(--accent)" : "var(--primary)";
+            }, 1800);
+        });
+    </script>
 </body>
 </html>
