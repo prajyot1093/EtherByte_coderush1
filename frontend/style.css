@@ -5,3 +5,14 @@ body {
   background: #f4f7fc;
   color: #333;
 }
+header {
+  background: #004aad;
+  color: white;
+  text-align: center;
+  padding: 1rem;
+}
+main {
+  padding: 2rem;
+  max-width: 800px;
+  margin: auto;
+}
