@@ -15,3 +15,6 @@ Problem Definition : With the rise of AI writing tools (e.g., ChatGPT),    plagi
 --Works across multiple languages.
 --Catches rephrased, paraphrased, and translated content.
 --Detects plagiarism from research papers, blogs, and online articles.
+4. Reviewer Dashboard 📊
+--Easy-to-read interface for conference organizers.
+--Provides originality score, AI-likelihood score, and plagiarism report.
