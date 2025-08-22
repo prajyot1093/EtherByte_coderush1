@@ -5,6 +5,12 @@ Problem Definition : With the rise of AI writing tools (e.g., ChatGPT),    plagi
                      content. Thus develop a Conference Management ToolKit   for research paper 
                      conference 
 # Task : “CMT is like a digital detective + supportive teacher for research papers — ensuring originality, spotting AI overuse, and maintaining fairness in academic conferences.”
+
+# Challenge : 
+--Flag AI-written or AI-influenced submissions.
+--Detect plagiarism in multiple languages and paraphrased text.
+--Identify if the writing style matches the claimed author.
+
 # Features : 1. Author Stylometry Tracking 👤
 --Builds a personal writing “fingerprint” for each author.
 --Flags when a submission doesn’t match their usual style.
@@ -26,3 +32,4 @@ Problem Definition : With the rise of AI writing tools (e.g., ChatGPT),    plagi
 7. Seamless Integration 🔗
 --Can be integrated into existing conference paper submission systems.
 --API-based design for future scalability.
+
