@@ -23,3 +23,6 @@ Problem Definition : With the rise of AI writing tools (e.g., ChatGPT),    plagi
 --Helps authors improve and resubmit.
 6. Multi-Language Support 🌍
 --Works for English + regional languages (important for global conferences).
+7. Seamless Integration 🔗
+--Can be integrated into existing conference paper submission systems.
+--API-based design for future scalability.
