@@ -37,6 +37,7 @@
             position: sticky;
             top: 0;
             z-index: 100;
+            animation: headerSlideIn 1.2s cubic-bezier(.23,1.01,.32,1) both;
         }
         nav { display: flex; align-items: center; justify-content: space-between; padding: 1.2rem 0; }
         .logo {
@@ -47,6 +48,19 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            animation: logoFlicker 2.5s infinite alternate;
+        }
+        @keyframes logoFlicker {
+            0%, 100% { filter: drop-shadow(0 0 8px var(--primary)); }
+            10% { filter: drop-shadow(0 0 16px var(--accent)); }
+            20% { filter: drop-shadow(0 0 12px var(--primary-light)); }
+            30% { filter: drop-shadow(0 0 20px var(--accent-light)); }
+            40% { filter: drop-shadow(0 0 10px var(--primary)); }
+            50% { filter: drop-shadow(0 0 24px var(--accent)); }
+            60% { filter: drop-shadow(0 0 8px var(--primary-light)); }
+            70% { filter: drop-shadow(0 0 16px var(--accent-light)); }
+            80% { filter: drop-shadow(0 0 12px var(--primary)); }
+            90% { filter: drop-shadow(0 0 20px var(--accent)); }
         }
         .nav-links {
             display: flex;
@@ -59,6 +73,22 @@
             font-weight: 600;
             font-size: 1.08rem;
             transition: color 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .nav-links a::after {
+            content: "";
+            display: block;
+            position: absolute;
+            left: 0; bottom: -4px;
+            width: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: 2px;
+            transition: width 0.4s cubic-bezier(.23,1.01,.32,1);
+        }
+        .nav-links a:hover::after {
+            width: 100%;
         }
         .nav-links a:hover { color: var(--accent); }
         .dark-mode-switch {
@@ -426,10 +456,6 @@
             color: var(--accent);
             animation: fadeIn 1s;
         }
-        @keyframes fadeIn {
-            from { opacity: 0;}
-            to { opacity: 1;}
-        }
         /* --- NEW ANIMATIONS --- */
         /* Neon Glow Animation */
         @keyframes neonGlow {
@@ -579,6 +605,102 @@
         body.dark-mode .submission-form textarea:focus { border: 1.5px solid var(--accent);}
         body.dark-mode .plagiarism-result { color: var(--primary);}
         body.dark-mode .bg-shapes .shape { opacity: 0.18;}
+        .result-more {
+            margin-top: 1.2rem;
+            text-align: center;
+        }
+        .three-dots {
+            display: inline-block;
+            margin: 0.5em auto 0.5em auto;
+            cursor: pointer;
+        }
+        .three-dots span {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            margin: 0 6px;
+            border-radius: 50%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            box-shadow: 0 0 8px var(--accent);
+            animation: dotBounce 1.2s infinite;
+        }
+        .three-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .three-dots span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes dotBounce {
+            0%, 100% { transform: translateY(0);}
+            50% { transform: translateY(-10px);}
+        }
+        .result-attributes {
+            margin-top: 1em;
+            padding: 1.2em 1em;
+            border-radius: 14px;
+            background: rgba(255,255,255,0.85);
+            box-shadow: 0 0 16px var(--primary-light);
+            animation: fadeIn 0.8s;
+            color: var(--text-dark);
+            font-size: 1.08em;
+            display: inline-block;
+            min-width: 220px;
+            text-align: left;
+        }
+        body.dark-mode .result-attributes {
+            background: rgba(39,39,54,0.95);
+            color: var(--neon-yellow);
+            box-shadow: 0 0 16px var(--accent);
+        }
+        .result-menu {
+            margin-top: 1.2rem;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+        .menu-dot {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5em 0;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3em;
+            outline: none;
+        }
+        .menu-dot span {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            box-shadow: 0 0 8px var(--accent);
+            animation: dotBounce 1.2s infinite;
+        }
+        .menu-dot span:nth-child(2) { animation-delay: 0.2s; }
+        .menu-dot span:nth-child(3) { animation-delay: 0.4s; }
+        .menu-dropdown {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 2.2em;
+            min-width: 220px;
+            background: rgba(255,255,255,0.97);
+            border-radius: 14px;
+            box-shadow: 0 8px 32px var(--primary-light);
+            padding: 1em 1.2em;
+            animation: fadeIn 0.5s;
+            color: var(--text-dark);
+            font-size: 1.08em;
+            text-align: left;
+            border: 1.5px solid var(--primary);
+        }
+        .menu-item {
+            margin-bottom: 0.5em;
+        }
+        .menu-item:last-child { margin-bottom: 0; }
+        body.dark-mode .menu-dropdown {
+            background: rgba(39,39,54,0.98);
+            color: var(--neon-yellow);
+            box-shadow: 0 0 16px var(--accent);
+            border-color: var(--accent);
+        }
     </style>
 </head>
 <body>
@@ -721,6 +843,27 @@
                 <button type="submit" class="cta-button">Check Submission</button>
             </form>
             <div id="plagiarismResult" class="plagiarism-result"></div>
+            <div id="resultMore" class="result-more" style="display:none;">
+                <div class="three-dots" id="threeDots">
+                    <span></span><span></span><span></span>
+                </div>
+                <div class="result-attributes" id="resultAttributes" style="display:none;">
+                    <!-- Attributes will be injected here -->
+                </div>
+            </div>
+            <div id="resultMenu" class="result-menu" style="display:none;">
+                <button class="menu-dot" id="menuDotBtn" aria-label="Show details">
+                    <span></span><span></span><span></span>
+                </button>
+                <div class="menu-dropdown" id="menuDropdown" style="display:none;">
+                    <div class="menu-item"><b>AI Generated:</b> <span id="menuAiGen"></span></div>
+                    <div class="menu-item"><b>Plagiarism:</b> <span id="menuPlag"></span></div>
+                    <div class="menu-item"><b>Stylometric Inconsistency:</b> <span id="menuStyle"></span></div>
+                    <div class="menu-item"><b>AI Score:</b> <span id="menuAiScore"></span></div>
+                    <div class="menu-item"><b>Plagiarism Score:</b> <span id="menuPlagScore"></span></div>
+                    <div class="menu-item"><b>Stylometric Score:</b> <span id="menuStyleScore"></span></div>
+                </div>
+            </div>
         </div>
     </section>
     <script>
@@ -785,19 +928,23 @@
         const darkModeIcon = document.getElementById('darkModeIcon');
         const darkModeText = document.getElementById('darkModeText');
         function setDarkMode(on) {
+            const body = document.body;
             if (on) {
-                document.body.classList.add('dark-mode');
+                body.classList.add('theme-transition');
+                body.classList.add('dark-mode');
                 darkModeSwitch.classList.add('active');
                 darkModeIcon.textContent = '☀️';
                 darkModeText.textContent = 'Light Mode';
                 localStorage.setItem('darkMode', 'on');
             } else {
-                document.body.classList.remove('dark-mode');
+                body.classList.add('theme-transition');
+                body.classList.remove('dark-mode');
                 darkModeSwitch.classList.remove('active');
                 darkModeIcon.textContent = '🌙';
                 darkModeText.textContent = 'Dark Mode';
                 localStorage.setItem('darkMode', 'off');
             }
+            setTimeout(() => body.classList.remove('theme-transition'), 800);
         }
         darkModeSwitch.addEventListener('click', () => {
             setDarkMode(!document.body.classList.contains('dark-mode'));
@@ -825,33 +972,115 @@
                 }, 1500);
             });
         });
-        // Submission Form Logic (Simulated)
-        document.getElementById('plagiarismForm').addEventListener('submit', function(e) {
+        // --- SUBMISSION FORM: Send file/text to FastAPI backend ---
+        document.getElementById('plagiarismForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const fileInput = document.getElementById('fileUpload');
             const textInput = document.getElementById('sampleText');
             const resultDiv = document.getElementById('plagiarismResult');
+            const formData = new FormData();
+
+            // Hide more section on new submit
+            document.getElementById('resultMore').style.display = "none";
+            document.getElementById('resultAttributes').style.display = "none";
+            document.getElementById('resultMenu').style.display = "none";
+
+            if (fileInput && fileInput.files.length) {
+                formData.append('file', fileInput.files[0]);
+            }
+            if (textInput && textInput.value.trim()) {
+                formData.append('text', textInput.value.trim());
+            }
+
             resultDiv.textContent = "Analyzing submission...";
-            resultDiv.style.color = "var(--primary)";
-            setTimeout(() => {
-                // Simulate detection logic
-                let msg = "";
-                let ai = Math.random() < 0.35;
-                let plag = Math.random() < 0.4;
-                let style = Math.random() < 0.2;
-                if (!fileInput.files.length && !textInput.value.trim()) {
-                    resultDiv.textContent = "Please upload a file or paste some text.";
-                    resultDiv.style.color = "var(--accent)";
-                    return;
-                }
-                msg += ai ? "🤖 <b>AI-generated patterns detected.</b><br>" : "✅ <b>No strong AI signals found.</b><br>";
-                msg += plag ? "❌ <b>Plagiarism Detected!</b><br>" : "✅ <b>No Plagiarism Found.</b><br>";
-                msg += style ? "✍️ <b>Stylometric inconsistency flagged.</b>" : "✍️ <b>Writing style matches profile.</b>";
-                resultDiv.innerHTML = msg;
-                resultDiv.style.animation = "fadeIn 1s";
-                resultDiv.style.color = plag ? "var(--accent)" : "var(--primary)";
-            }, 1800);
+            try {
+                const res = await fetch('http://127.0.0.1:8000/analyze', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+
+                // Calculate percentage and color for plagiarism
+                const plagPercent = Math.round((data.plagiarism_score || 0) * 100);
+                let plagColor = plagPercent > 80 ? "#ef4444" : plagPercent > 50 ? "#f59e42" : "#10b981";
+                let plagText = plagPercent > 60
+                    ? `<span style="color:${plagColor};font-size:1.3em;font-weight:bold;text-shadow:0 0 8px ${plagColor};">
+                    ⚠️ Plagiarism Detected: ${plagPercent}%
+                   </span>`
+                    : `<span style="color:${plagColor};font-size:1.2em;font-weight:bold;">
+                    ✅ Plagiarism Score: ${plagPercent}%
+                   </span>`;
+
+                // Attention grabbing animation
+                let anim = plagPercent > 60
+                    ? "animation: pulseGlow 1.2s infinite alternate;"
+                    : "";
+
+                resultDiv.innerHTML = `
+                <div style="margin-bottom:0.5em;${anim}">
+                    ${plagText}
+                </div>
+                <span style="font-size:1.05em;">
+                    <b>AI Score:</b> ${(Math.round((data.ai_score || 0) * 100))}% &nbsp;|&nbsp;
+                    <b>Stylometric Score:</b> ${(Math.round((data.stylometric_score || 0) * 100))}%
+                </span>
+                <br>
+                <span style="font-size:1em;color:#888;">${data.message}</span>
+            `;
+
+                // Show menu
+                showResultMenu(data);
+            } catch (err) {
+                resultDiv.textContent = "Error connecting to backend.";
+                document.getElementById('resultMore').style.display = "none";
+                document.getElementById('resultMenu').style.display = "none";
+            }
         });
+
+        function showResultMenu(data) {
+            const menu = document.getElementById('resultMenu');
+            const dropdown = document.getElementById('menuDropdown');
+            menu.style.display = "block";
+            dropdown.style.display = "none";
+            document.getElementById('menuAiGen').innerHTML = data.ai_generated ? "<span style='color:#ef4444;'>Yes</span>" : "<span style='color:#10b981;'>No</span>";
+            document.getElementById('menuPlag').innerHTML = data.plagiarism ? "<span style='color:#ef4444;'>Detected</span>" : "<span style='color:#10b981;'>None</span>";
+            document.getElementById('menuStyle').innerHTML = data.stylometric_inconsistency ? "<span style='color:#f59e42;'>Flagged</span>" : "<span style='color:#10b981;'>Consistent</span>";
+            document.getElementById('menuAiScore').textContent = Math.round((data.ai_score || 0) * 100) + "%";
+            document.getElementById('menuPlagScore').textContent = Math.round((data.plagiarism_score || 0) * 100) + "%";
+            document.getElementById('menuStyleScore').textContent = Math.round((data.stylometric_score || 0) * 100) + "%";
+        }
+        const menuDotBtn = document.getElementById('menuDotBtn');
+        const menuDropdown = document.getElementById('menuDropdown');
+        if (menuDotBtn) {
+            menuDotBtn.onclick = function() {
+                menuDropdown.style.display = menuDropdown.style.display === "block" ? "none" : "block";
+            };
+        }
+
+        // --- DASHBOARD: Fetch live stats from backend ---
+        async function updateDashboard() {
+            try {
+                const res = await fetch('http://127.0.0.1:8000/stats');
+                const stats = await res.json();
+                if(document.getElementById('submissions-processed')) document.getElementById('submissions-processed').textContent = stats.submissions_processed;
+                if(document.getElementById('ai-flagged')) document.getElementById('ai-flagged').textContent = stats.ai_flagged + "%";
+                if(document.getElementById('plagiarism-detected')) document.getElementById('plagiarism-detected').textContent = stats.plagiarism_detected + "%";
+                if(document.getElementById('confidence-score')) document.getElementById('confidence-score').textContent = stats.confidence_score + "%";
+                if(document.getElementById('processing-time')) document.getElementById('processing-time').textContent = stats.processing_time + "s";
+                if(document.getElementById('false-positives')) document.getElementById('false-positives').textContent = stats.false_positives + "%";
+            } catch (err) {
+                // Optionally show error
+            }
+        }
+        updateDashboard();
+        setInterval(updateDashboard, 10000); // Update every 10s
+
+        // --- OPTIONAL: Fetch submission history (for admin/history view) ---
+        // fetch('http://127.0.0.1:8000/submissions')
+        //   .then(res => res.json())
+        //   .then(data => { /* render submission history if needed */ });
+
+        // ...existing code (animations, dark mode, etc.) ...
     </script>
 </body>
 </html>
