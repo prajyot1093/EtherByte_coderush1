@@ -8,3 +8,6 @@ Problem Definition : With the rise of AI writing tools (e.g., ChatGPT),    plagi
 # Features : 1. Author Stylometry Tracking 👤
 --Builds a personal writing “fingerprint” for each author.
 --Flags when a submission doesn’t match their usual style.
+2. AI-Generated Content Detection 🤖
+--Uses entropy & perplexity to catch text that feels “too AI-like.”
+--Detects hidden AI-watermarks in generated writing.
