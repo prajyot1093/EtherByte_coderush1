@@ -21,3 +21,5 @@ Problem Definition : With the rise of AI writing tools (e.g., ChatGPT),    plagi
 5. Explainable Reports 📝
 --Instead of just “flagging,” the system explains why a section is suspicious.
 --Helps authors improve and resubmit.
+6. Multi-Language Support 🌍
+--Works for English + regional languages (important for global conferences).
