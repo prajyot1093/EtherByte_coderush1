@@ -1,4 +1,5 @@
-from flask import Flask, request, jsonify, send_from_directory
+from flask_cors import CORS
+from flask import Flask, request, jsonify, send_from_directory, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -12,7 +13,8 @@ UPLOAD_FOLDER = "uploads"
 ALLOWED_EXTENSIONS = {"pdf", "docx", "txt", "tex"}
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='template', static_folder='static')
+CORS(app)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///cmt.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["JWT_SECRET_KEY"] = "super-secret-key"
@@ -68,8 +70,8 @@ def simulate_analysis():
 
 # --- ROUTES ---
 @app.route("/")
-def root():
-    return jsonify({"message": "CMT Flask API is running."})
+def index():
+    return render_template('index.html')
 
 @app.route("/register", methods=["POST"])
 def register():
@@ -210,4 +212,4 @@ def uploaded_file(filename):
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0')

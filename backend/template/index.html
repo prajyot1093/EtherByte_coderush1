@@ -704,6 +704,34 @@
     </style>
 </head>
 <body>
+    <!-- Login Modal -->
+    <div id="loginModal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;">
+        <div style="background:#222;padding:2rem 2.5rem;border-radius:16px;box-shadow:0 8px 32px #000;color:#fff;max-width:350px;width:90%;text-align:center;">
+            <h2 style="margin-bottom:1.2rem;">Login</h2>
+            <input id="loginUsername" type="text" placeholder="Username" style="width:90%;margin-bottom:0.7rem;padding:0.6rem;border-radius:8px;border:none;font-size:1.1em;"/><br>
+            <input id="loginPassword" type="password" placeholder="Password" style="width:90%;margin-bottom:1.1rem;padding:0.6rem;border-radius:8px;border:none;font-size:1.1em;"/><br>
+            <button id="loginBtn" style="background:linear-gradient(90deg,#06b6d4,#ec4899);color:#fff;padding:0.7rem 2.2rem;border:none;border-radius:50px;font-size:1.1em;font-weight:700;cursor:pointer;">Login</button>
+            <div id="loginError" style="color:#ff4e4e;margin-top:0.7rem;min-height:1.5em;"></div>
+            <div style="margin-top:1.2rem;">
+                <span style="color:#aaa;">Don't have an account?</span>
+                <button id="showRegisterBtn" style="background:none;border:none;color:#06b6d4;text-decoration:underline;cursor:pointer;font-size:1em;">Register</button>
+            </div>
+        </div>
+    </div>
+    <!-- Register Modal -->
+    <div id="registerModal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;">
+        <div style="background:#222;padding:2rem 2.5rem;border-radius:16px;box-shadow:0 8px 32px #000;color:#fff;max-width:350px;width:90%;text-align:center;">
+            <h2 style="margin-bottom:1.2rem;">Register</h2>
+            <input id="registerUsername" type="text" placeholder="Username" style="width:90%;margin-bottom:0.7rem;padding:0.6rem;border-radius:8px;border:none;font-size:1.1em;"/><br>
+            <input id="registerPassword" type="password" placeholder="Password" style="width:90%;margin-bottom:1.1rem;padding:0.6rem;border-radius:8px;border:none;font-size:1.1em;"/><br>
+            <button id="registerBtn" style="background:linear-gradient(90deg,#06b6d4,#ec4899);color:#fff;padding:0.7rem 2.2rem;border:none;border-radius:50px;font-size:1.1em;font-weight:700;cursor:pointer;">Register</button>
+            <div id="registerError" style="color:#ff4e4e;margin-top:0.7rem;min-height:1.5em;"></div>
+            <div style="margin-top:1.2rem;">
+                <span style="color:#aaa;">Already have an account?</span>
+                <button id="showLoginBtn" style="background:none;border:none;color:#06b6d4;text-decoration:underline;cursor:pointer;font-size:1em;">Login</button>
+            </div>
+        </div>
+    </div>
     <div class="bg-shapes">
         <div class="shape shape-1"></div>
         <div class="shape shape-2"></div>
@@ -867,6 +895,92 @@
         </div>
     </section>
     <script>
+    // --- LOGIN & REGISTER MODAL LOGIC ---
+    function showLoginModal() {
+        document.getElementById('loginModal').style.display = 'flex';
+        document.getElementById('registerModal').style.display = 'none';
+    }
+    function hideLoginModal() {
+        document.getElementById('loginModal').style.display = 'none';
+    }
+    function showRegisterModal() {
+        document.getElementById('registerModal').style.display = 'flex';
+        document.getElementById('loginModal').style.display = 'none';
+    }
+    function hideRegisterModal() {
+        document.getElementById('registerModal').style.display = 'none';
+    }
+    // Show login modal if no token
+    if (!localStorage.getItem('access_token')) {
+        showLoginModal();
+    }
+    document.getElementById('showRegisterBtn').onclick = showRegisterModal;
+    document.getElementById('showLoginBtn').onclick = showLoginModal;
+    document.getElementById('loginBtn').onclick = async function() {
+        const username = document.getElementById('loginUsername').value.trim();
+        const password = document.getElementById('loginPassword').value.trim();
+        const errorDiv = document.getElementById('loginError');
+        errorDiv.textContent = '';
+        if (!username || !password) {
+            errorDiv.textContent = 'Please enter username and password.';
+            return;
+        }
+        try {
+            const res = await fetch('/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+            const data = await res.json();
+            if (res.ok && data.access_token) {
+                localStorage.setItem('access_token', data.access_token);
+                hideLoginModal();
+                location.reload();
+            } else {
+                errorDiv.textContent = data.msg || 'Login failed.';
+            }
+        } catch (err) {
+            errorDiv.textContent = 'Error connecting to backend.';
+        }
+    };
+    document.getElementById('registerBtn').onclick = async function() {
+        const username = document.getElementById('registerUsername').value.trim();
+        const password = document.getElementById('registerPassword').value.trim();
+        const errorDiv = document.getElementById('registerError');
+        errorDiv.textContent = '';
+        if (!username || !password) {
+            errorDiv.textContent = 'Please enter username and password.';
+            return;
+        }
+        try {
+            const res = await fetch('/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                errorDiv.style.color = '#10b981';
+                errorDiv.textContent = 'Registration successful! You can now log in.';
+                setTimeout(() => {
+                    showLoginModal();
+                    errorDiv.style.color = '#ff4e4e';
+                    errorDiv.textContent = '';
+                }, 1200);
+            } else {
+                errorDiv.textContent = data.msg || 'Registration failed.';
+            }
+        } catch (err) {
+            errorDiv.textContent = 'Error connecting to backend.';
+        }
+    };
+    // Optional: allow Enter key to submit login/register
+    document.getElementById('loginPassword').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') document.getElementById('loginBtn').click();
+    });
+    document.getElementById('registerPassword').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') document.getElementById('registerBtn').click();
+    });
         // Animated Counter Function
         function animateCounter(element, target, suffix = '') {
             let current = 0;
@@ -994,9 +1108,16 @@
 
             resultDiv.textContent = "Analyzing submission...";
             try {
-                const res = await fetch('http://127.0.0.1:8000/analyze', {
+                const token = localStorage.getItem('access_token');
+                if (!token) {
+                    showLoginModal();
+                    outputDiv.textContent = "Please log in first.";
+                    return;
+                }
+                const res = await fetch('http://127.0.0.1:5000/analyze-text', {
                     method: 'POST',
-                    body: formData
+                    body: formData,
+                    headers: { 'Authorization': 'Bearer ' + token }
                 });
                 const data = await res.json();
 
@@ -1060,7 +1181,11 @@
         // --- DASHBOARD: Fetch live stats from backend ---
         async function updateDashboard() {
             try {
-                const res = await fetch('http://127.0.0.1:8000/stats');
+                const token = localStorage.getItem('access_token');
+                if (!token) return;
+                const res = await fetch('http://127.0.0.1:5000/stats', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
                 const stats = await res.json();
                 if(document.getElementById('submissions-processed')) document.getElementById('submissions-processed').textContent = stats.submissions_processed;
                 if(document.getElementById('ai-flagged')) document.getElementById('ai-flagged').textContent = stats.ai_flagged + "%";
@@ -1076,7 +1201,7 @@
         setInterval(updateDashboard, 10000); // Update every 10s
 
         // --- OPTIONAL: Fetch submission history (for admin/history view) ---
-        // fetch('http://127.0.0.1:8000/submissions')
+    // fetch('http://127.0.0.1:5000/recent')
         //   .then(res => res.json())
         //   .then(data => { /* render submission history if needed */ });
 
