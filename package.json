@@ -1,0 +1,12 @@
+{
+  "name": "CMT - AI Research Paper Detection",
+  "description": "AI-powered Conference Management Toolkit for detecting plagiarism and AI-generated content in academic papers",
+  "version": "1.0.0",
+  "main": "backend/main.py",
+  "scripts": {
+    "start": "gunicorn --bind 0.0.0.0:$PORT --chdir backend main:app"
+  },
+  "keywords": ["ai", "plagiarism", "detection", "academic", "research", "conference"],
+  "author": "EtherByte",
+  "license": "MIT"
+}
